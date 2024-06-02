@@ -15,6 +15,7 @@ class UpdateDetail(ConfigDatabase):
         super().__init__()
         self.url = f'https://api.notion.com/v1/databases/{self.notion_database_id}'
     
+
     def retrieve_databases(self):
 
         url = self.url + '/' + 'query'
@@ -26,6 +27,7 @@ class UpdateDetail(ConfigDatabase):
         
         return response.json()
     
+
     def update_page(self, data:json, page_id:str):
 
         url = f"https://api.notion.com/v1/pages/{page_id}"
@@ -39,6 +41,7 @@ class UpdateDetail(ConfigDatabase):
         except Exception as e:
             print(f'When trying to retrieve database information from notion database error found: {e}')
     
+
     def find_page_id_by_content_id(self, database, content_id):
 
         try:
@@ -51,12 +54,23 @@ class UpdateDetail(ConfigDatabase):
         return None
 
 
-    def update_content_generation(self, new_content, page_id):
+    def find_page_id_by_post_status(self, database):
 
-        new_post_id = 'new_content_generation'
-        new_view_count = 'new_view_count'
-        new_like_count = 'new_like_count'
-        new_status = 'Success 200'
+        try:
+            for page in database['results']:
+                if page["properties"]['Status']['status']['name'] == 'Not Started':
+                    return page['id']
+            return None
+        except Exception as e:
+            print(f'When trying to retrieve database content_id from notion database error found: {e}')
+
+
+    def update_content_generation(self, post_id, view_on_post, like_on_post, new_content, page_id):
+
+        new_post_id = post_id
+        new_view_count = view_on_post
+        new_like_count = like_on_post
+        new_status = 'Success'
 
         update_content = update_data = {
                 "properties": {
@@ -72,26 +86,10 @@ class UpdateDetail(ConfigDatabase):
                         ]
                     },
                     "View on Post": {
-                        "type": "rich_text",
-                        "rich_text": [
-                            {
-                                "type": "text",
-                                "text": {
-                                    "content": new_view_count
-                                }
-                            }
-                        ]
+                        "number": new_view_count
                     },
                     "Like on Post": {
-                        "type": "rich_text",
-                        "rich_text": [
-                            {
-                                "type": "text",
-                                "text": {
-                                    "content": new_like_count
-                                }
-                            }
-                        ]
+                        "number": new_like_count
                     },
                     "Status": {
                         "type": "status",

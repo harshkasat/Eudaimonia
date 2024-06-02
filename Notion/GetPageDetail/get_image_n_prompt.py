@@ -14,15 +14,15 @@ class GetPage(UpdateDetail):
         super().__init__()
         self.url = f'https://api.notion.com/v1/databases/{self.notion_database_id}'
 
-    def get_page(self, content_id):
+    def get_page(self):
 
         try:
 
             database = self.retrieve_databases()
-            page_id = self.find_page_id_by_content_id(database, content_id)
+            page_id = self.find_page_id_by_post_status(database)
 
             if not page_id:
-                raise Exception(f"No page found with Content_id: {content_id}")
+                raise Exception(f"No page found with Failed Status:")
 
             url = f"https://api.notion.com/v1/pages/{page_id}"
 
@@ -47,7 +47,3 @@ class GetPage(UpdateDetail):
                 print(f'When trying to retrieve database information from notion database error found: {e}')
         except Exception as e:
             print(f'When trying to retrieve database information from notion database error found: {e}')
-
-if __name__ == '__main__':
-    res = GetPage().get_page('1')
-    print(res)

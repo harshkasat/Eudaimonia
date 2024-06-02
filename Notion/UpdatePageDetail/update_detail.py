@@ -50,19 +50,15 @@ class UpdateDetail(ConfigDatabase):
         
         return None
 
-    def main(self, content_id, new_post_id, new_view_count, new_like_count, new_status):
-        try:
-            database = self.retrieve_databases()
-            page_id = self.find_page_id_by_content_id(database, content_id)
 
-            if not page_id:
-                raise Exception(f"No page found with Content_id: {content_id}")
-        except Exception as e:
-            print(f'When trying to retrieve database information from notion database error found: {e}')
-        
+    def update_content_generation(self, new_content, page_id):
 
-        try:
-            update_data = {
+        new_post_id = 'new_content_generation'
+        new_view_count = 'new_view_count'
+        new_like_count = 'new_like_count'
+        new_status = 'Success 200'
+
+        update_content = update_data = {
                 "properties": {
                     "Post Id": {
                         "type": "rich_text",
@@ -102,24 +98,19 @@ class UpdateDetail(ConfigDatabase):
                         "status": {
                             "name": new_status,
                          }
+                    },
+                    'Content Generator':{
+                        "type": "rich_text",
+                        "rich_text": [
+                            {
+                                "type": "text",
+                                "text": {
+                                    "content": new_content
+                                }
+                            }
+                        ]
                     }
                 }
             }
-
-            updated_page = self.update_page(data = update_data, page_id = page_id)
-
-        except Exception as e:
-            print(f'When trying to retrieve database information from notion database error found: {e}')
-
-
-# Example usage
-if __name__ == "__main__":
-    content_id = "2"  # Replace with the Content_id of the row you want to update
-    new_post_id = "NEW_POST_ID"  # Replace with the new Post ID
-    new_view_count = "NEW_VIEW_COUNT"  # Replace with the new View on Post
-    new_like_count = "NEW_LIKE_COUNT"  # Replace with the new Like on Post
-    new_status = "In Progress"  # Replace with the new Status
-
-    UpdateDetail().main(content_id, new_post_id, new_view_count, new_like_count, new_status)
-
-# res = UpdateDetail().main('1', '123', '1234r43', '12345876543', 'In Progress')
+        
+        updated_page = self.update_page(data = update_content, page_id = page_id)

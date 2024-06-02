@@ -3,51 +3,51 @@ import os
 # Ensure the Notion directory is in the Python path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
 
-from Notion.Config.notion_config import ConfigDatabase
+from Notion.UpdatePageDetail.update_detail import UpdateDetail
 import requests
 import json
 
 
-class GetPage(ConfigDatabase):
+class GetPage(UpdateDetail):
 
     def __init__(self):
         super().__init__()
-        self.url = f'https://api.notion.com/v1/databases/{self.notion_database_id}/query'
+        self.url = f'https://api.notion.com/v1/databases/{self.notion_database_id}'
 
-    def get_page(self):
+    def get_page(self, content_id):
 
         try:
 
-            req = requests.post(url=self.url, headers=self.headers)
+            database = self.retrieve_databases()
+            page_id = self.find_page_id_by_content_id(database, content_id)
 
-            result = req.json()
-            # print(result['results'][0]['properties']['Prompt'])
+            if not page_id:
+                raise Exception(f"No page found with Content_id: {content_id}")
 
-            # For Facebook Post
-            image_path = result['results'][0]['properties']['Files & media']['files'][0]['file']['url']
-            prompt_description = result['results'][0]['properties']['Prompt']['rich_text'][0]['text']['content']
+            url = f"https://api.notion.com/v1/pages/{page_id}"
 
-            # Facebook log and Status
+            try:
+                response = requests.get(url=url, headers=self.headers)
 
-            date_of_post = result['results'][0]['properties']['Date of Post']['last_edited_time']
-            post_status = result['results'][0]['properties']['Status']['status']['name']
-            post_id = result['results'][0]['properties']['Post Id']['rich_text'][0]['text']['content']
-            view_on_post = result['results'][0]['properties']['View on Post']['rich_text'][0]['text']['content']
-            like_on_post = result['results'][0]['properties']['Like on Post']['rich_text'][0]['text']['content']
-            content_id = result['results'][0]["properties"]["Content_id"]["title"][0]["text"]["content"]
+                if response.status_code != 200:
+                    raise Exception(f"Error updating page: {response.status_code}\n{response.text}")
 
-            json_response = json.dumps({"image_path": image_path,
-                      "prompt_description": prompt_description})
-            
+                response = (response).json()
+                
+                image_path = response['properties']['Files & media']['files'][0]['file']['url']
+                prompt_description = response['properties']['Prompt']['rich_text'][0]['text']['content']
 
-            return json_response
-        
+                result = {"image_path": image_path, 
+                "prompt_description": prompt_description,
+                "page_id":page_id}
+
+                return (result)
+
+            except Exception as e:
+                print(f'When trying to retrieve database information from notion database error found: {e}')
         except Exception as e:
             print(f'When trying to retrieve database information from notion database error found: {e}')
 
-
-
-
-
-res = GetPage().get_page()
-print(res)
+if __name__ == '__main__':
+    res = GetPage().get_page('1')
+    print(res)

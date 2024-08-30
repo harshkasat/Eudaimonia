@@ -44,3 +44,29 @@ https://github.com/user-attachments/assets/d3f8a2b8-20fc-40f2-baea-3da72d5d0138
 4. Run the FastAPI server:
    ```bash
    uvicorn main:app --reload
+
+## Running with Docker
+
+You can also run the application using Docker.
+
+### Building the Docker Image
+
+To build the Docker image, use the following command:
+
+```bash
+docker build -t ai-blog-creation .
+```
+
+### Running the Docker Container
+
+To run the Docker container, use the following command:
+
+```bash
+docker run -p 8000:8000 ai-blog-creation
+```
+
+- If you encounter a conflict with an existing container name, you can remove the existing container with:
+
+```bash
+docker rm ai-blog-creation
+```

@@ -15,7 +15,9 @@ Effortlessly generate, publish, and organize engaging blogs using AI. This proje
 
 ## Demo Video
 * Check out the demo of how the project works:
-<video width="320" height="240" controls> <source src="final_video.mp4" type="video/mp4"> Your browser does not support the video tag. </video>
+
+https://github.com/user-attachments/assets/d3f8a2b8-20fc-40f2-baea-3da72d5d0138
+
 ## Setup and Installation
 
 1. **Clone the repository:**
